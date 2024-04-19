@@ -24,7 +24,20 @@ app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
 
-
+//console.log(Date.now());
+/* A request to /api/:date? with a valid date should return a JSON object with a unix key that is a Unix timestamp of the input date in milliseconds (as type Number) */
+app.get("/api/:date?", function (req, res) {
+  let {date} = req.params;
+  let timestamp =new Date(parseInt(date));
+  if (isNaN(timestamp)) {
+    date=Date.now()
+    timestamp =new Date(parseInt(date))
+  }
+   res.json({
+    unix: date, 
+    utc: timestamp.toUTCString()
+  }); 
+})
 
 // Listen on port set in environment variable or default to 3000
 var listener = app.listen(process.env.PORT || 3000, function () {
