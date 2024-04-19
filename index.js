@@ -24,21 +24,38 @@ app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
 
-//console.log(Date.now());
-/* A request to /api/:date? with a valid date should return a JSON object with a unix key that is a Unix timestamp of the input date in milliseconds (as type Number) */
+let time=new Date('1713535736000')
+time=time.getTime()
+console.log(time)
+
+/* A request to /api/:date? with a valid date should return a JSON object with a unix key that is a Unix inputDate of the input date in milliseconds (as type Number) */
+/* app.get("/api/:date?", function (req, res) {
+
+  let {date} = req.params;
+  let inputDate =new Date(date);
+  console.log(inputDate);
+  if (isNaN(inputDate)&&date===undefined){
+    date=Date.now()
+    inputDate =new Date(parseInt(date))
+  }
+  else{
+    res.json({
+      error: "Invalid Date"
+    })
+  }
+    res.json({
+    unix: date, 
+    utc: inputDate.toUTCString()
+  }); 
+}) */
 app.get("/api/:date?", function (req, res) {
   let {date} = req.params;
-  let timestamp =new Date(parseInt(date));
-  if (isNaN(timestamp)) {
-    date=Date.now()
-    timestamp =new Date(parseInt(date))
-  }
-   res.json({
-    unix: date, 
-    utc: timestamp.toUTCString()
-  }); 
+  let inputDate =new Date(date);
+  res.json({
+    unix: inputDate.getTime(), 
+    utc: inputDate.toUTCString()
+  })
 })
-
 // Listen on port set in environment variable or default to 3000
 var listener = app.listen(process.env.PORT || 3000, function () {
   console.log('Your app is listening on port ' + listener.address().port);
