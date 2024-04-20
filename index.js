@@ -28,19 +28,30 @@ app.get("/api/hello", function (req, res) {
 app.get("/api/:date?", function (req, res) {
   // Extract the date parameter from the request URL
   let date = req.params.date;
+  console.log(date);
   let unixKey; // Variable to store Unix timestamp
   let utcdate; // Variable to store UTC date
 
   // Check if the date parameter is a valid number (Unix timestamp)
   if (!isNaN(date)) {
-    unixKey = date; // Assign the date directly to unixKey
-    utcdate = new Date(parseInt(date)); // Convert the Unix timestamp to a Date object
+    // Convert the date parameter to a number and create a Date object
+    unixKey = parseInt(date);
+    utcdate = new Date(unixKey);
+
+    // Send the response with Unix timestamp and UTC date
+    res.json({
+      unix: unixKey, // Unix timestamp
+      utc: utcdate.toUTCString(), // UTC date string
+    });
   } else {
     // If the date parameter is not a valid number (Unix timestamp)
-    unixKey = Date.parse(date); // Attempt to parse the date string
+    unixKey = new Date(date); // Convert the date string to a Date object
+ 
     if (!isNaN(unixKey)) {
       // If parsing was successful
-      utcdate = new Date(parseInt(unixKey)); // Convert the parsed date to a Date object
+
+      utcdate = unixKey; // Convert the parsed date to a Date object
+      unixKey = utcdate.getTime(); // Convert the Date object to Unix timestamp
     } else {
       // If parsing failed
       if (date === undefined) {
@@ -49,7 +60,7 @@ app.get("/api/:date?", function (req, res) {
         utcdate = new Date(unixKey); // Convert the current timestamp to a Date object
       } else {
         // If the provided date parameter is invalid
-        res.json({ error: "Invalid Date" }); // Send an error response
+        return res.json({ error: "Invalid Date" }); // Send an error response
       }
     }
   }
@@ -60,6 +71,7 @@ app.get("/api/:date?", function (req, res) {
     utc: utcdate.toUTCString(), // UTC date string
   });
 });
+
 
 // Listen on port set in environment variable or default to 3000
 var listener = app.listen(process.env.PORT || 3000, function () {
